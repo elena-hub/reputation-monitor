@@ -431,6 +431,36 @@ def _robots_allows(url: str, session: requests.Session, resolver) -> bool:
     return parser.can_fetch(USER_AGENT, url)
 
 
+def _read_limited_html(response: requests.Response) -> str:
+    """Read at most the configured HTML limit without buffering an oversized body."""
+
+    content_length = response.headers.get("Content-Length")
+    if content_length:
+        try:
+            declared_length = int(content_length)
+        except ValueError:
+            declared_length = None
+        if declared_length is not None and declared_length > MAX_RESPONSE_BYTES:
+            response.close()
+            raise WebsiteAccessBlockedError(
+                "Website access was blocked because the HTML page exceeds 2 MB."
+            )
+
+    body = bytearray()
+    try:
+        for chunk in response.iter_content(chunk_size=64 * 1024):
+            if not chunk:
+                continue
+            body.extend(chunk)
+            if len(body) > MAX_RESPONSE_BYTES:
+                raise WebsiteAccessBlockedError(
+                    "Website access was blocked because the HTML page exceeds 2 MB."
+                )
+        return bytes(body).decode(response.encoding or "utf-8", errors="replace")
+    finally:
+        response.close()
+
+
 def fetch_reviews(
     url: str,
     *,
@@ -459,6 +489,7 @@ def fetch_reviews(
                 headers={"User-Agent": USER_AGENT},
                 timeout=REQUEST_TIMEOUT,
                 allow_redirects=False,
+                stream=True,
             )
         except requests.Timeout as error:
             raise WebsiteImportError("The website request timed out.") from error
@@ -466,22 +497,25 @@ def fetch_reviews(
             raise WebsiteImportError("The website request failed.") from error
         if response.is_redirect or response.is_permanent_redirect:
             if redirect_count == MAX_REDIRECTS:
+                response.close()
                 raise WebsiteAccessBlockedError("Website access was blocked after too many redirects.")
             location = response.headers.get("Location")
+            response.close()
             if not location:
                 raise WebsiteAccessBlockedError("Website access was blocked by an invalid redirect.")
             current_url = validate_public_url(urljoin(current_url, location), resolver)
             continue
         if response.status_code in {401, 403, 429}:
+            response.close()
             raise WebsiteAccessBlockedError(
                 f"Website access was blocked or rate-limited with HTTP {response.status_code}."
             )
         if response.status_code >= 400:
+            response.close()
             raise WebsiteImportError(f"The website returned HTTP {response.status_code}.")
         content_type = response.headers.get("Content-Type", "").lower()
         if "text/html" not in content_type:
+            response.close()
             raise UnsupportedReviewFormatError("The URL did not return an HTML page.")
-        if len(response.content) > MAX_RESPONSE_BYTES:
-            raise WebsiteAccessBlockedError("Website access was blocked because the HTML page exceeds 2 MB.")
-        return parse_reviews_html(response.text, current_url, selector_config)
+        return parse_reviews_html(_read_limited_html(response), current_url, selector_config)
     raise WebsiteImportError("The website import could not be completed.")

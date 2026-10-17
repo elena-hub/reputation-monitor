@@ -4,6 +4,7 @@ import pytest
 import requests
 
 from reputation_monitor.web_importer import (
+    MAX_RESPONSE_BYTES,
     NoReviewsFoundError,
     SelectorConfig,
     UnsupportedReviewFormatError,
@@ -33,6 +34,15 @@ class FakeResponse:
         self.headers = headers or {"Content-Type": "text/html; charset=utf-8"}
         self.is_redirect = status in {301, 302, 303, 307, 308}
         self.is_permanent_redirect = status in {301, 308}
+        self.encoding = "utf-8"
+        self.closed = False
+
+    def iter_content(self, chunk_size=1):
+        for offset in range(0, len(self.content), chunk_size):
+            yield self.content[offset : offset + chunk_size]
+
+    def close(self):
+        self.closed = True
 
 
 class FakeSession:
@@ -201,6 +211,18 @@ def test_fetch_returns_detected_format():
     )
 
     assert result.detected_format == "Schema.org Review JSON-LD"
+
+
+def test_fetch_stops_streaming_when_response_exceeds_limit():
+    oversized = FakeResponse(text="x" * (MAX_RESPONSE_BYTES + 1))
+
+    with pytest.raises(WebsiteAccessBlockedError, match="exceeds 2 MB"):
+        fetch_reviews(
+            "https://example.com/reviews",
+            session=FakeSession([oversized]),
+            resolver=PUBLIC_RESOLVER,
+            check_robots=False,
+        )
 
 
 def test_rejects_unsupported_page_structure():

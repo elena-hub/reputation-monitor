@@ -6,6 +6,7 @@ from io import StringIO
 import logging
 from pathlib import Path
 from collections.abc import MutableMapping
+from urllib.parse import urlsplit
 
 import streamlit as st
 
@@ -45,7 +46,22 @@ def switch_to_csv_upload(state: MutableMapping | None = None) -> None:
     """Switch the source widget without changing threshold or other settings."""
 
     active_state = st.session_state if state is None else state
+    active_state.pop("website_import_result", None)
+    active_state.pop("website_analysis_ready", None)
     active_state["import_method"] = "CSV upload"
+
+
+def safe_log_origin(url: str) -> str:
+    """Return only a website origin for logs, excluding paths and query data."""
+
+    try:
+        parsed = urlsplit(url.strip())
+        hostname = parsed.hostname
+    except ValueError:
+        return "[invalid website URL]"
+    if parsed.scheme not in {"http", "https"} or not hostname:
+        return "[invalid website URL]"
+    return f"{parsed.scheme.lower()}://{hostname.lower()}"
 
 
 def _show_csv_alternative(message: str) -> None:
@@ -109,11 +125,14 @@ def format_csv_import_status(snapshot: str, result: LoadResult) -> tuple[str, st
 
 def _log_rejected_reviews(label: str, result: LoadResult) -> None:
     for issue in result.issues:
+        message = issue.message
+        if message.startswith("duplicate review_id "):
+            message = "duplicate review_id in this input"
         LOGGER.warning(
             "%s record rejected at source row %s: %s",
             label,
             issue.row_number,
-            issue.message,
+            message,
         )
 
 
@@ -216,6 +235,8 @@ def main() -> None:
     current: LoadResult | None = None
     previous: LoadResult | None = None
     if input_method == "CSV upload":
+        st.session_state.pop("website_import_result", None)
+        st.session_state.pop("website_analysis_ready", None)
         sample_path = PROJECT_ROOT / "data" / "reviews_sample.csv"
         if sample_path.exists():
             st.download_button(
@@ -292,6 +313,7 @@ def main() -> None:
                     practice_id_attribute=practice_id_attribute,
                 )
         if st.button("Import reviews", type="primary") and website_url:
+            log_origin = safe_log_origin(website_url)
             st.session_state.pop("website_import_result", None)
             st.session_state["website_analysis_ready"] = False
             if use_custom_selectors and selector_config is None:
@@ -302,20 +324,20 @@ def main() -> None:
                         website_url, selector_config=selector_config
                     )
                 except WebsiteAccessBlockedError as error:
-                    LOGGER.warning("Website review import was blocked for %s", website_url, exc_info=True)
+                    LOGGER.warning("Website review import was blocked for %s: %s", log_origin, error)
                     _show_csv_alternative(RESTRICTED_IMPORT_MESSAGE)
                 except NoReviewsFoundError as error:
-                    LOGGER.info("No reviews were found at %s: %s", website_url, error)
+                    LOGGER.info("No reviews were found at %s: %s", log_origin, error)
                     _show_csv_alternative(
                         "No reviews were found in the page's accessible HTML. You can configure supported CSS selectors or upload a CSV file."
                     )
                 except UnsupportedReviewFormatError as error:
-                    LOGGER.info("Unsupported review HTML at %s: %s", website_url, error)
+                    LOGGER.info("Unsupported review HTML at %s: %s", log_origin, error)
                     _show_csv_alternative(
                         "The page uses an unsupported review format. Configure CSS selectors for this layout or upload a CSV file."
                     )
                 except WebsiteImportError as error:
-                    LOGGER.warning("Website review import failed for %s", website_url, exc_info=True)
+                    LOGGER.warning("Website review import failed for %s: %s", log_origin, error)
                     _show_csv_alternative(
                         "Reviews couldn't be imported. Check the public page URL or continue by uploading a CSV file."
                     )

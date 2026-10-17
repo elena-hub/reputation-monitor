@@ -12,6 +12,7 @@ from reputation_monitor.dashboard import (
     format_alert_slider_label,
     load_uploaded_csv,
     review_rows,
+    safe_log_origin,
     switch_to_csv_upload,
 )
 from reputation_monitor.loader import LoadResult, ValidationIssue
@@ -111,6 +112,24 @@ def test_rejected_csv_details_are_written_to_logs(caplog):
     assert "rating must be from 1 to 5" in caplog.text
 
 
+def test_duplicate_identifier_value_is_not_written_to_logs(caplog):
+    result = LoadResult(
+        reviews=[],
+        issues=[ValidationIssue(9, "duplicate review_id 'private-review-123' in this input")],
+    )
+
+    dashboard._log_rejected_reviews("Current CSV", result)
+
+    assert "duplicate review_id in this input" in caplog.text
+    assert "private-review-123" not in caplog.text
+
+
+def test_safe_log_origin_excludes_path_query_and_fragment():
+    assert safe_log_origin(
+        "https://Example.com/private/path?access_token=secret#review"
+    ) == "https://example.com"
+
+
 @pytest.mark.parametrize(
     ("threshold", "expected_label"),
     [
@@ -161,6 +180,8 @@ def test_switch_to_csv_preserves_threshold_and_other_settings():
         "import_method": "Import from Website",
         "maximum_rating": 4,
         "website_url": "https://example.com/reviews",
+        "website_import_result": object(),
+        "website_analysis_ready": True,
     }
 
     switch_to_csv_upload(state)

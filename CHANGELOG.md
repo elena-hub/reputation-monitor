@@ -2,6 +2,18 @@
 
 All notable changes to Reputation Monitor are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and release versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Stop reading website responses as soon as the existing 2 MB HTML limit is exceeded.
+- Exclude review identifiers and URL paths, queries, and fragments from application logs.
+- Discard website-import records from session state when the user returns to CSV import.
+
+### Documentation
+
+- Add Streamlit Community Cloud settings and live-demo publication status to the README.
+
 ## [1.0.0] - 2026-10-18
 
 ### Added

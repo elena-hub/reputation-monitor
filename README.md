@@ -4,6 +4,22 @@ Reputation Monitor is a local Python 3.11+ application for reviewing authorized 
 
 The project provides both a Streamlit dashboard and a command-line interface. It does not connect to Google or provide continuous monitoring of any review platform.
 
+## Live demo
+
+Streamlit Community Cloud deployment is prepared but has not been authorized or published. After deployment, the verified public demo URL will be added here.
+
+Deployment settings:
+
+| Setting | Value |
+|---|---|
+| Repository | `elena-hub/reputation-monitor` |
+| Branch | `main` |
+| Main file path | `streamlit_app.py` |
+| Python | `3.12` |
+| Secrets | None required |
+
+Community Cloud detects the root `uv.lock` and installs the local `reputation-monitor` package with its declared dependencies. The application does not require system packages or Mac-specific paths.
+
 ## Key features
 
 - Import a current CSV and an optional previous CSV in Streamlit.
@@ -181,6 +197,8 @@ If access is restricted or the page format is unsupported, use an authorized CSV
 - It does not classify sentiment, verify review accuracy, or determine legal status.
 - A low rating is a numerical alert signal, not proof that a review is false, harmful, or removable.
 - Reusing an output directory overwrites the existing report filenames.
+- The public dashboard has no user authentication or per-user request throttling. Monitor resource use when website import is enabled for anonymous visitors.
+- Website destinations are checked before every request and redirect, but application-level DNS checks cannot completely eliminate a DNS-change race between validation and connection.
 
 ## Documentation
 
