@@ -1,0 +1,4 @@
+review_id,practice_id,practice_name,review_date,rating,review_text,source_label
+sample-001,practice-demo,Clinique Exemple Rivoli,2026-10-14,5,The reception team was helpful.,Authorized CSV export
+sample-002,practice-demo,Clinique Exemple Rivoli,2026-10-15,2,The appointment began later than expected.,Authorized CSV export
+sample-003,practice-demo,Clinique Exemple Rivoli,2026-10-16,4,Clear information and a straightforward visit.,Authorized CSV export

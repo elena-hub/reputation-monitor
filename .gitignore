@@ -1,0 +1,55 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+credentials.json
+secrets.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+
+# Local logs, exports, and reports
+*.log
+reports/
+exports/
+output/
+uploads/
+
+# Keep only the maintained synthetic CSV fixtures in data/
+data/*
+!data/reviews_sample.csv
+!data/reviews_previous.csv
+!data/reviews_current.csv
+
+# Separately maintained website documentation and integration tooling
+docs-publication/
+site-integration/
+scripts/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

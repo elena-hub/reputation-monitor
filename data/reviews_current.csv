@@ -1,0 +1,21 @@
+review_id,practice_id,practice_name,review_date,rating,review_text,source_label
+REV-001,PR-001,Cabinet Médical des Tilleuls,2026-08-01,5,The appointment started on time and the explanation was clear,Example Reviews
+REV-002,PR-001,Cabinet Médical des Tilleuls,2026-08-04,4,Helpful reception team and a calm waiting room,Example Reviews
+REV-003,PR-002,Clinique du Parc Exemple,2026-08-06,2,I waited longer than expected for my fictional appointment,Sample Feedback
+REV-004,PR-002,Clinique du Parc Exemple,2026-08-09,5,Clear follow-up instructions,Sample Feedback
+REV-005,PR-003,Centre de Santé Horizon,2026-08-12,3,The visit was satisfactory overall,Demo Reviews
+REV-006,PR-003,Centre de Santé Horizon,2026-08-14,4,The online booking steps were straightforward,Demo Reviews
+REV-007,PR-004,Maison Médicale Rivage,2026-08-18,1,It was difficult to reach the fictional reception desk,Example Reviews
+REV-008,PR-004,Maison Médicale Rivage,2026-08-20,5,The practitioner listened carefully,Example Reviews
+REV-009,PR-005,Pôle Médical Lumière,2026-08-23,4,The premises were easy to find,Sample Feedback
+REV-010,PR-005,Pôle Médical Lumière,2026-08-25,3,Everything matched my expectations,Sample Feedback
+REV-011,PR-001,Cabinet Médical des Tilleuls,2026-08-29,5,A professional fictional consultation,Demo Reviews
+REV-012,PR-002,Clinique du Parc Exemple,2026-09-02,4,The reminder message was useful,Demo Reviews
+REV-013,PR-003,Centre de Santé Horizon,2026-09-05,2,The fictional invoice was hard to understand,Example Reviews
+REV-014,PR-004,Maison Médicale Rivage,2026-09-08,5,Kind staff and useful information,Example Reviews
+REV-015,PR-005,Pôle Médical Lumière,2026-09-11,4,The visit was efficient,Sample Feedback
+REV-016,PR-001,Cabinet Médical des Tilleuls,2026-10-01,1,I could not understand the fictional booking confirmation,Example Reviews
+REV-017,PR-003,Centre de Santé Horizon,2026-10-03,4,The new appointment reminder was helpful,Demo Reviews
+REV-018,PR-005,Pôle Médical Lumière,2026-10-05,2,The fictional waiting time was longer than announced,Sample Feedback
+REV-019,PR-002,Clinique du Parc Exemple,2026-10-06,6,This row demonstrates an out-of-range rating,Demo Reviews
+,PR-004,Maison Médicale Rivage,2026-10-07,3,This row demonstrates a missing stable review identifier,Example Reviews
