@@ -1,24 +1,20 @@
 # Reputation Monitor
 
-Reputation Monitor is a local Python 3.11+ application for reviewing authorized reputation data. It validates CSV records, summarizes current ratings, compares review snapshots by stable identifier, and creates alerts for newly detected reviews at or below a configurable rating threshold.
+[**Live Demo**](https://reputation-monitor.streamlit.app/) · [**Technical Documentation**](https://reputation-management-service.com/en/docs/python-reputation-monitoring/) · [**Source Code**](https://github.com/elena-hub/reputation-monitor)
+
+Try the application directly in your browser without installing Python. The public Streamlit demo supports the same CSV analysis, snapshot comparison, alert generation, and report-download workflow as the local dashboard.
+
+[![Reputation Monitor Streamlit dashboard showing the two-star alert threshold and CSV or website import options](docs/assets/reputation-monitor-dashboard.png)](https://reputation-monitor.streamlit.app/)
+
+Reputation Monitor is a Python 3.11+ application for reviewing authorized reputation data. It validates CSV records, summarizes current ratings, compares review snapshots by stable identifier, and creates alerts for newly detected reviews at or below a configurable rating threshold.
 
 The project provides both a Streamlit dashboard and a command-line interface. It does not connect to Google or provide continuous monitoring of any review platform.
 
 ## Live demo
 
-Streamlit Community Cloud deployment is prepared but has not been authorized or published. After deployment, the verified public demo URL will be added here.
+Open the [live Reputation Monitor dashboard](https://reputation-monitor.streamlit.app/) to test the workflow in a browser. Download the sample CSV from the dashboard or use the synthetic files in `data/`.
 
-Deployment settings:
-
-| Setting | Value |
-|---|---|
-| Repository | `elena-hub/reputation-monitor` |
-| Branch | `main` |
-| Main file path | `streamlit_app.py` |
-| Python | `3.12` |
-| Secrets | None required |
-
-Community Cloud detects the root `uv.lock` and installs the local `reputation-monitor` package with its declared dependencies. The application does not require system packages or Mac-specific paths.
+> **Public demo privacy:** Use fictional, synthetic, or otherwise non-sensitive review data. Do not upload patient information, confidential business records, credentials, or personal data that you are not authorized to process.
 
 ## Key features
 
